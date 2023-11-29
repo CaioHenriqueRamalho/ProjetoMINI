@@ -1,0 +1,107 @@
+<?php
+
+class User {
+    public string $user_id;
+    private string $name;
+    private DateTime $created;
+
+    function __construct(string $name) {
+        //$this->user_id = newId();
+        $this->name = $name;
+        $this->created = new DateTime('now');
+    }
+}
+
+class Request {
+    public string $request_id;
+    public string $user_id;
+    private DateTime $created;
+    private string $input;
+    private string $sanitized_input;
+    private string $result;
+    private bool $is_safe;
+
+    function __construct(string $user_id, string $input) {
+        //$this->request_id = newId();
+        $this->user_id = $user_id;
+        $this->created = new DateTime('now');
+        $this->input = $input;
+
+        $foo = $this->sanitizeInput($this->input); // array[sanitized, result, issafe]
+        $this->sanitized_input = $foo[0];
+        $this->result = $foo[1];
+        $this->is_safe = $foo[2];
+    }
+
+    function sanitizeInput() {
+        $result = null;
+        // sanitiza input, faz comparação...
+        $result[0] = 'sanitizedInput';
+        $result[1] = 'result';
+        $result[2] = 'is_safe';
+        return $result;
+
+    }
+
+    function getInput() {
+        return $this->input;
+    }
+
+    function geSanitizedtInput() {
+        return $this->sanitized_input;
+    }
+
+    function getResult() {
+        return $this->result;
+    }
+
+    function getIsSafe() {
+        return $this->isSafe;
+    }
+}
+
+class Log {
+    public string $log_id;
+    public string $user_id;
+    private DateTime $created;
+    private string $content;
+
+    function __construct(string $user_id, DateTime $start = null, DateTime $end = null) {
+        // this $log_id = newId();
+        $this->user_id = $user_id;
+        $this->created = new DateTime('now');
+
+        $this->content = $this->getContent($user_id, $start, $end);
+    }
+
+    function getContent(string $user_id, DateTime $start, DateTime $end) {
+        $json = null;
+        $sql = 'select * from Request where Request.user_id = "' . $user_id . '"';
+
+        switch ($foo = null) {
+            case (!is_null($start) && !is_null($end)): // 2 datas
+                $sql = $sql . "and Request.created between " . $start . " and " . $$end . ";";
+                break;
+            
+            case (is_null($start) && !is_null($end)): // só fim
+                $sql = $sql . "and Request.created <= cast(" . $$end . " as date);";
+                break;
+
+            case (!is_null($start) && is_null($start)); // só começo
+                $sql = $sql . "and Request.created >= cast(" . $start . " as date);";
+                break;
+
+            default:
+                $sql = $sql . ";";
+                break;
+        }
+
+        // conexão com o banco
+        // roda $sql no banco
+        // salva resultado no $json
+        // formata retorno em JSON
+
+        return $json;
+    }
+}
+
